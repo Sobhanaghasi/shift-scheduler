@@ -1,5 +1,6 @@
 from __future__ import annotations
 import concurrent.futures
+import os
 from config import Config
 from io_handler import IOHandler
 from cost_engine import CostEngine
@@ -29,12 +30,12 @@ def main():
 
     # 2. Run Parallel Simulations
     results = []
-    print(f"Running {Config.MAX_WORKERS} simulations in parallel...")
+    print(f"Running {Config.SA_RUNS} simulations with up to {Config.MAX_WORKERS} workers...")
     
     with concurrent.futures.ProcessPoolExecutor(max_workers=Config.MAX_WORKERS) as executor:
         futures = [
             executor.submit(run_simulation, i, people, shifts, params) 
-            for i in range(10)
+            for i in range(Config.SA_RUNS)
         ]
         
         for future in concurrent.futures.as_completed(futures):
@@ -52,5 +53,4 @@ def main():
     print("--- Done ---")
 
 if __name__ == "__main__":
-    import os
     main()

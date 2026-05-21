@@ -9,6 +9,7 @@ class Shift:
     id: int
     time_index: int
     assignment_weights: List[float]
+    calendar_block: str
     fixed_assignments: List[Optional[str]] = field(default_factory=list)
 
     def __post_init__(self):
@@ -28,6 +29,12 @@ class Shift:
 
     def is_fixed_slot(self, slot_index: int) -> bool:
         return self.fixed_assignments[slot_index] is not None
+
+@dataclass
+class CalendarDetails:
+    start_date: str
+    timezone: str
+
 
 @dataclass
 class PersonCostDetails:
@@ -58,6 +65,7 @@ class Person:
     last_week_final_shift_index: Optional[int]
     impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]
+    calendar_color: str = ""
 
     def can_work(self, shift_id: int) -> bool:
         return shift_id not in self.impossible_shifts

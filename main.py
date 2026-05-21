@@ -24,7 +24,7 @@ def main():
         print(f"Error: {input_file} missing.")
         return
 
-    params, people, shifts = IOHandler.load_input(input_file)
+    params, calendar, people, shifts = IOHandler.load_input(input_file)
     print(f"Loaded {len(people)} people, {len(shifts)} shifts.")
     print(f"Parameters: {params}")
 
@@ -49,7 +49,7 @@ def main():
     
     # 4. Save Top 3
     top_3 = results[:3]
-    IOHandler.save_results(top_3)
+    IOHandler.save_results(top_3, calendar, people, shifts)
     print("--- Done ---")
 
 if __name__ == "__main__":

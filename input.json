@@ -1,21 +1,21 @@
 {
   "calendar": {
-    "start_date": "2026/05/25",
+    "start_date": "2026/05/23",
     "timezone": "Asia/Tehran"
   },
   "shifts": [
     {"id": 0, "time_index": 0, "calendar_block": "1 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
-    {"id": 1, "time_index": 1, "calendar_block": "1 - 15:00-23:00", "assignment_weights": [0.7, 0.3]},
+    {"id": 1, "time_index": 1, "calendar_block": "1 - 15:00-23:59", "assignment_weights": [0.7, 0.3]},
     {"id": 2, "time_index": 2, "calendar_block": "2 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
-    {"id": 3, "time_index": 3, "calendar_block": "2 - 15:00-23:00", "assignment_weights": [0.7, 0.3]},
+    {"id": 3, "time_index": 3, "calendar_block": "2 - 15:00-23:59", "assignment_weights": [0.7, 0.3]},
     {"id": 4, "time_index": 4, "calendar_block": "3 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
-    {"id": 5, "time_index": 5, "calendar_block": "3 - 15:00-23:00", "assignment_weights": [0.7, 0.3]},
+    {"id": 5, "time_index": 5, "calendar_block": "3 - 15:00-23:59", "assignment_weights": [0.7, 0.3]},
     {"id": 6, "time_index": 6, "calendar_block": "4 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
-    {"id": 7, "time_index": 7, "calendar_block": "4 - 15:00-23:00", "assignment_weights": [0.7, 0.3]},
+    {"id": 7, "time_index": 7, "calendar_block": "4 - 15:00-23:59", "assignment_weights": [0.7, 0.3]},
     {"id": 8, "time_index": 8, "calendar_block": "5 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
-    {"id": 9, "time_index": 9, "calendar_block": "5 - 15:00-23:00", "assignment_weights": [0.7, 0.3]},
-    {"id": 10, "time_index": 10, "calendar_block": "6 - 08:00-20:00", "assignment_weights": [1.4, 0.6], "fixed_assignments": [null, "Mostafa"]},
-    {"id": 11, "time_index": 11, "calendar_block": "7 - 08:00-20:00", "assignment_weights": [2.0]}
+    {"id": 9, "time_index": 9, "calendar_block": "5 - 15:00-23:59", "assignment_weights": [0.7, 0.3]},
+    {"id": 10, "time_index": 10, "calendar_block": "6 - 08:00-23:59", "assignment_weights": [1.4, 0.6], "fixed_assignments": [null, "Mostafa"]},
+    {"id": 11, "time_index": 11, "calendar_block": "7 - 08:00-20:59", "assignment_weights": [2.0]}
   ],
   "people": [
     {
@@ -23,7 +23,7 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -2,
-      "calendar_color": "#7986CB",
+      "calendar_color_id": "1",
       "impossible_shifts": [1, 2, 4],
       "unwanted_coeffs": {"6": 40, "4": 40, "10": 20, "11": 20}
     },
@@ -32,7 +32,7 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -5,
-      "calendar_color": "#33B679",
+      "calendar_color_id": "2",
       "impossible_shifts": [0, 1],
       "unwanted_coeffs": {"3": 30, "7": 30, "8": 20, "9": 20}
     },
@@ -41,7 +41,7 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -6,
-      "calendar_color": "#F4511E",
+      "calendar_color_id": "6",
       "impossible_shifts": [0, 1],
       "unwanted_coeffs": {"4": 40, "5": 20, "6": 40}
     },
@@ -50,7 +50,7 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color": "#8E24AA",
+      "calendar_color_id": "3",
       "impossible_shifts": [0, 5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     },
@@ -59,7 +59,7 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color": "#039BE5",
+      "calendar_color_id": "7",
       "impossible_shifts": [0, 5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     },
@@ -68,7 +68,7 @@
       "portion": 1.3,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color": "#E67C73",
+      "calendar_color_id": "4",
       "impossible_shifts": [5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     }

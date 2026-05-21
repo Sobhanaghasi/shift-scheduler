@@ -19,7 +19,7 @@ class ICSExporter:
             "VERSION:2.0",
             "PRODID:-//Shift Scheduler//EN",
             "CALSCALE:GREGORIAN",
-            "METHOD:PUBLISH",
+            "METHOD:REQUEST",
             f"X-WR-CALNAME:{ICSExporter._escape_ics_text('Shift Schedule')}",
             f"X-WR-TIMEZONE:{calendar.timezone}",
         ]
@@ -39,15 +39,16 @@ class ICSExporter:
                     f"DTSTAMP:{now_stamp}",
                     f"DTSTART;TZID={calendar.timezone}:{start_dt.strftime('%Y%m%dT%H%M%S')}",
                     f"DTEND;TZID={calendar.timezone}:{end_dt.strftime('%Y%m%dT%H%M%S')}",
+                    "SEQUENCE:0",
                     f"SUMMARY:{ICSExporter._escape_ics_text(summary)}",
                     f"DESCRIPTION:{ICSExporter._escape_ics_text(description)}",
                     f"CATEGORIES:{ICSExporter._escape_ics_text(person_id)}",
                 ])
                 if calendar.organizer_email:
-                    lines.append(f"ORGANIZER:mailto:{calendar.organizer_email}")
+                    lines.append(f"ORGANIZER;CN=Shift Scheduler:mailto:{calendar.organizer_email}")
                 if person.email:
                     attendee_name = ICSExporter._escape_ics_param(person_id)
-                    lines.append(f"ATTENDEE;CN={attendee_name};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{person.email}")
+                    lines.append(f"ATTENDEE;CN={attendee_name};CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{person.email}")
                 lines.append("END:VEVENT")
 
         lines.append("END:VCALENDAR")

@@ -31,7 +31,7 @@ class IOHandler:
                 portion=p_data.get("portion"),
                 previous_load=p_data.get("previous_load"),
                 last_week_final_shift_index=p_data.get("last_week_final_shift_index"),
-                allowed_shifts=set(p_data.get("allowed_shifts", [])),
+                impossible_shifts=set(p_data.get("impossible_shifts", [])),
                 unwanted_coeffs=p_data.get("unwanted_coeffs", {})
             )
             people.append(p)

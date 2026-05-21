@@ -32,8 +32,11 @@ class Person:
     portion: float
     previous_load: float
     last_week_final_shift_index: Optional[int]
-    allowed_shifts: set[int]
+    impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]
+
+    def can_work(self, shift_id: int) -> bool:
+        return shift_id not in self.impossible_shifts
 
 @dataclass
 class Schedule:

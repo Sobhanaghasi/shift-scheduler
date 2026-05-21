@@ -22,7 +22,7 @@ class Scheduler:
     def _generate_initial_valid_schedule(self) -> Schedule:
         assignments = {}
         for s_id in self.shift_ids:
-            candidates = [p.id for p in self.people if s_id in p.allowed_shifts]
+            candidates = [p.id for p in self.people if p.can_work(s_id)]
             if not candidates:
                 raise ValueError(f"Shift {s_id} cannot be assigned to anyone (Hard Constraint Violation).")
             assignments[s_id] = random.choice(candidates)
@@ -45,7 +45,7 @@ class Scheduler:
             # Find candidates excluding current owner
             candidates = [
                 p.id for p in self.people 
-                if shift_to_swap in p.allowed_shifts and p.id != current_owner
+                if p.can_work(shift_to_swap) and p.id != current_owner
             ]
             
             if not candidates:

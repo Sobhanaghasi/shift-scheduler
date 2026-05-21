@@ -42,7 +42,7 @@ class CostEngine:
         details.load_ratio_deviation = load_details["load_ratio_deviation"]
         
         lambda2 = self.params["lambda2_load"]
-        details.weighted_load_cost = lambda2 * (details.load_ratio_deviation ** 2)
+        details.weighted_load_cost = lambda2 * abs(details.load_ratio_deviation)
 
         details.portion = person.portion
 

@@ -34,6 +34,7 @@ class Shift:
 class CalendarDetails:
     start_date: str
     timezone: str
+    organizer_email: str = ""
 
 
 @dataclass
@@ -66,6 +67,7 @@ class Person:
     impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]
     calendar_color_id: str = ""
+    email: str = ""
 
     def can_work(self, shift_id: int) -> bool:
         return shift_id not in self.impossible_shifts

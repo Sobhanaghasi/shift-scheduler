@@ -25,6 +25,7 @@ class IOHandler:
         calendar = CalendarDetails(
             start_date=calendar_data["start_date"],
             timezone=calendar_data["timezone"],
+            organizer_email=calendar_data.get("organizer_email", ""),
         )
 
         # 2. Parse Shifts
@@ -50,6 +51,7 @@ class IOHandler:
                 impossible_shifts=set(p_data.get("impossible_shifts", [])),
                 unwanted_coeffs=p_data.get("unwanted_coeffs", {}),
                 calendar_color_id=str(p_data.get("calendar_color_id", "")),
+                email=p_data.get("email", ""),
             )
             people.append(p)
             

@@ -38,6 +38,11 @@ class ICSExporter:
                     f"DESCRIPTION:{ICSExporter._escape_ics_text(description)}",
                     f"CATEGORIES:{ICSExporter._escape_ics_text(person_id)}",
                 ])
+                if calendar.organizer_email:
+                    lines.append(f"ORGANIZER:mailto:{calendar.organizer_email}")
+                if person.email:
+                    attendee_name = ICSExporter._escape_ics_param(person_id)
+                    lines.append(f"ATTENDEE;CN={attendee_name};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{person.email}")
                 if person.calendar_color_id:
                     # Google Calendar event colors are colorId values in the Calendar API.
                     # ICS import may ignore this non-standard field; it is retained as metadata.
@@ -87,6 +92,15 @@ class ICSExporter:
         if not (0 <= hour <= 23 and 0 <= minute <= 59):
             raise ValueError(f"Invalid time value: {value}")
         return hour, minute
+
+    @staticmethod
+    def _escape_ics_param(value: str) -> str:
+        return (
+            value.replace("\\", "\\\\")
+            .replace(";", "\\;")
+            .replace(",", "\\,")
+            .replace(":", "\\:")
+        )
 
     @staticmethod
     def _escape_ics_text(value: str) -> str:

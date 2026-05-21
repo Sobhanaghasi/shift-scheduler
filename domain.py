@@ -1,12 +1,36 @@
 from __future__ import annotations
-from dataclasses import dataclass, field, asdict
-from typing import List, Dict, Optional
+from dataclasses import dataclass, field
+from typing import List, Dict, Optional, Tuple
+
+AssignedRole = Tuple[int, int]  # (shift_id, assignment_slot_index)
 
 @dataclass
 class Shift:
     id: int
     weight: float
     time_index: int
+    assignment_weights: List[float] = field(default_factory=list)
+    fixed_assignments: List[Optional[str]] = field(default_factory=list)
+
+    def __post_init__(self):
+        if not self.assignment_weights:
+            self.assignment_weights = [self.weight]
+        if not self.assignment_weights:
+            raise ValueError(f"Shift {self.id} must have at least one assignment slot")
+        if any(weight <= 0 for weight in self.assignment_weights):
+            raise ValueError(f"Shift {self.id} assignment weights must be greater than 0")
+        if len(self.fixed_assignments) > len(self.assignment_weights):
+            raise ValueError(f"Shift {self.id} has more fixed assignments than assignment slots")
+        self.fixed_assignments = self.fixed_assignments + [None] * (len(self.assignment_weights) - len(self.fixed_assignments))
+
+    def slot_count(self) -> int:
+        return len(self.assignment_weights)
+
+    def slot_weight(self, slot_index: int) -> float:
+        return self.assignment_weights[slot_index]
+
+    def is_fixed_slot(self, slot_index: int) -> bool:
+        return self.fixed_assignments[slot_index] is not None
 
 @dataclass
 class PersonCostDetails:
@@ -44,13 +68,21 @@ class Person:
 @dataclass
 class Schedule:
     """Represents a specific state of assignments."""
-    assignments: Dict[int, str] = field(default_factory=dict) # shift_id -> person_id
+    assignments: Dict[int, List[str]] = field(default_factory=dict) # shift_id -> assignment-slot people
 
     def copy(self) -> 'Schedule':
-        return Schedule(self.assignments.copy())
+        return Schedule({sid: people.copy() for sid, people in self.assignments.items()})
     
     def get_person_shifts(self, person_id: str) -> List[int]:
-        return [sid for sid, pid in self.assignments.items() if pid == person_id]
+        return [sid for sid, people in self.assignments.items() if person_id in people]
+
+    def get_person_roles(self, person_id: str) -> List[AssignedRole]:
+        roles = []
+        for sid, people in self.assignments.items():
+            for slot_index, assigned_person_id in enumerate(people):
+                if assigned_person_id == person_id:
+                    roles.append((sid, slot_index))
+        return roles
 
 @dataclass
 class SimulationResult:

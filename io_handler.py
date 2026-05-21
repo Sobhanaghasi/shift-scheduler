@@ -21,7 +21,16 @@ class IOHandler:
         }
 
         # 2. Parse Shifts
-        shifts = [Shift(**s) for s in data.get("shifts", [])]
+        shifts = []
+        for s_data in data.get("shifts", []):
+            shift = Shift(
+                id=s_data["id"],
+                weight=s_data["weight"],
+                time_index=s_data["time_index"],
+                assignment_weights=s_data.get("assignment_weights", []),
+                fixed_assignments=s_data.get("fixed_assignments", []),
+            )
+            shifts.append(shift)
         
         # 3. Parse People
         people = []

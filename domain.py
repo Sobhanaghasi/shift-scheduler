@@ -7,14 +7,11 @@ AssignedRole = Tuple[int, int]  # (shift_id, assignment_slot_index)
 @dataclass
 class Shift:
     id: int
-    weight: float
     time_index: int
-    assignment_weights: List[float] = field(default_factory=list)
+    assignment_weights: List[float]
     fixed_assignments: List[Optional[str]] = field(default_factory=list)
 
     def __post_init__(self):
-        if not self.assignment_weights:
-            self.assignment_weights = [self.weight]
         if not self.assignment_weights:
             raise ValueError(f"Shift {self.id} must have at least one assignment slot")
         if any(weight <= 0 for weight in self.assignment_weights):

@@ -25,9 +25,8 @@ class IOHandler:
         for s_data in data.get("shifts", []):
             shift = Shift(
                 id=s_data["id"],
-                weight=s_data["weight"],
                 time_index=s_data["time_index"],
-                assignment_weights=s_data.get("assignment_weights", []),
+                assignment_weights=s_data["assignment_weights"],
                 fixed_assignments=s_data.get("fixed_assignments", []),
             )
             shifts.append(shift)

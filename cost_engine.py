@@ -6,11 +6,12 @@ class CostEngine:
     def __init__(self, shifts: Dict[int, Shift], params: Dict[str, float]):
         self.shifts = shifts
         self.params = params
+        self.total_week_load = sum(s.weight for s in shifts.values())
         
         # Mapping for fast time index lookups
         self.shift_time_indices = {s.id: s.time_index for s in shifts.values()}
 
-    def calculate_person_details(self, person: Person, assigned_shift_ids: List[int]) -> PersonCostDetails:
+    def calculate_person_details(self, person: Person, assigned_shift_ids: List[int], total_portion: float) -> PersonCostDetails:
         details = PersonCostDetails()
         
         # 1. Preference Cost (Shift Weight * Unwanted Coefficient)
@@ -31,21 +32,22 @@ class CostEngine:
         lambda1 = self.params["lambda1_distribution"]
         details.weighted_dist_cost = lambda1 * repulsion_score
 
-        # 3. Load (Moving Average)
-        current_load_val = self._calculate_load(person, assigned_shift_ids)
-        details.raw_load_score = current_load_val
+        # 3. Load Fairness (Moving Average of normalized load ratio)
+        load_details = self._calculate_load_fairness(person, assigned_shift_ids, total_portion)
+        details.actual_load = load_details["actual_load"]
+        details.expected_load = load_details["expected_load"]
+        details.current_load_ratio = load_details["current_load_ratio"]
+        details.previous_load_ratio = person.previous_load_ratio
+        details.effective_load_ratio = load_details["effective_load_ratio"]
+        details.load_ratio_deviation = load_details["load_ratio_deviation"]
         
         lambda2 = self.params["lambda2_load"]
-        details.weighted_load_cost = (lambda2 * current_load_val)
+        details.weighted_load_cost = lambda2 * (details.load_ratio_deviation ** 2)
 
         details.portion = person.portion
-        if details.portion <= 0:
-            raise ValueError(f"Portion divisor is less than or equal to 0 for person {person.id}")
-
-        details.portioned_weighted_load_cost = details.weighted_load_cost / details.portion
 
         # 4. Final Aggregation
-        details.final_cost_linear = details.raw_preference_cost + details.weighted_dist_cost + details.portioned_weighted_load_cost
+        details.final_cost_linear = details.raw_preference_cost + details.weighted_dist_cost + details.weighted_load_cost
         details.final_cost_squared = details.final_cost_linear ** 2
         
         return details
@@ -80,18 +82,36 @@ class CostEngine:
              return total_repulsion / num_shifts # Averaging by N shifts
         return 0.0
 
-    def _calculate_load(self, person: Person, assigned_shift_ids: List[int]) -> float:
-        current_week_sum = sum(self.shifts[sid].weight for sid in assigned_shift_ids)
-        
+    def _calculate_load_fairness(self, person: Person, assigned_shift_ids: List[int], total_portion: float) -> Dict[str, float]:
+        if person.portion <= 0:
+            raise ValueError(f"Portion must be greater than 0 for person {person.id}")
+        if total_portion <= 0:
+            raise ValueError("Total portion must be greater than 0")
+
+        actual_load = sum(self.shifts[sid].weight for sid in assigned_shift_ids)
+        expected_load = self.total_week_load * person.portion / total_portion
+        if expected_load <= 0:
+            raise ValueError(f"Expected load must be greater than 0 for person {person.id}")
+
+        current_load_ratio = actual_load / expected_load
         lambda3 = self.params["lambda3_recency"]
-        # Moving average formula: L3 * Current + (1-L3) * History
-        return (lambda3 * current_week_sum) + ((1.0 - lambda3) * person.previous_load)
+        effective_load_ratio = (lambda3 * current_load_ratio) + ((1.0 - lambda3) * person.previous_load_ratio)
+        load_ratio_deviation = effective_load_ratio - 1.0
+
+        return {
+            "actual_load": actual_load,
+            "expected_load": expected_load,
+            "current_load_ratio": current_load_ratio,
+            "effective_load_ratio": effective_load_ratio,
+            "load_ratio_deviation": load_ratio_deviation,
+        }
 
     def calculate_total_global_energy(self, people: List[Person], schedule: Schedule) -> float:
         """Sum of Squares of all people's costs."""
         total_sq = 0.0
+        total_portion = sum(p.portion for p in people)
         for p in people:
             sids = schedule.get_person_shifts(p.id)
-            details = self.calculate_person_details(p, sids)
+            details = self.calculate_person_details(p, sids, total_portion)
             total_sq += details.final_cost_squared
         return total_sq

@@ -82,9 +82,10 @@ class Scheduler:
 
         # 5. Generate full details for the best result
         final_details = {}
+        total_portion = sum(p.portion for p in self.people)
         for p in self.people:
             sids = best_schedule.get_person_shifts(p.id)
-            final_details[p.id] = self.cost_engine.calculate_person_details(p, sids)
+            final_details[p.id] = self.cost_engine.calculate_person_details(p, sids, total_portion)
 
         return SimulationResult(
             rank=0, # Assigned later

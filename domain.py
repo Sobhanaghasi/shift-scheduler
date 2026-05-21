@@ -14,23 +14,27 @@ class PersonCostDetails:
     # Raw values (Before Lambdas)
     raw_preference_cost: float = 0.0
     raw_distribution_score: float = 0.0  # Electrostatic repulsion
-    raw_load_score: float = 0.0          # Current load (moving average input)
-    
+    actual_load: float = 0.0
+    expected_load: float = 0.0
+    current_load_ratio: float = 0.0
+    previous_load_ratio: float = 1.0
+    effective_load_ratio: float = 1.0
+    load_ratio_deviation: float = 0.0
+
     # Weighted values (After Lambdas)
     weighted_dist_cost: float = 0.0
     weighted_load_cost: float = 0.0
     portion: float = 1.0
-    portioned_weighted_load_cost: float = 0.0
-    
+
     # Final steps
-    final_cost_linear: float = 0.0 # (Sum / Portion)
-    final_cost_squared: float = 0.0 # (Sum / Portion)^2 (Contribution to global energy)
+    final_cost_linear: float = 0.0
+    final_cost_squared: float = 0.0
 
 @dataclass
 class Person:
     id: str
     portion: float
-    previous_load: float
+    previous_load_ratio: float
     last_week_final_shift_index: Optional[int]
     impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]

@@ -29,7 +29,7 @@ class IOHandler:
             p = Person(
                 id=p_data["id"],
                 portion=p_data.get("portion"),
-                previous_load=p_data.get("previous_load"),
+                previous_load_ratio=p_data.get("previous_load_ratio", 1.0),
                 last_week_final_shift_index=p_data.get("last_week_final_shift_index"),
                 impossible_shifts=set(p_data.get("impossible_shifts", [])),
                 unwanted_coeffs=p_data.get("unwanted_coeffs", {})

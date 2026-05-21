@@ -40,22 +40,17 @@ class CalendarDetails:
 @dataclass
 class PersonCostDetails:
     """Holds the granular breakdown of a person's cost calculation."""
-    # Raw values (Before Lambdas)
     raw_preference_cost: float = 0.0
-    raw_distribution_score: float = 0.0  # Electrostatic repulsion
+    raw_distribution_score: float = 0.0
     actual_load: float = 0.0
     expected_load: float = 0.0
     current_load_ratio: float = 0.0
     previous_load_ratio: float = 1.0
     effective_load_ratio: float = 1.0
     load_ratio_deviation: float = 0.0
-
-    # Weighted values (After Lambdas)
     weighted_dist_cost: float = 0.0
     weighted_load_cost: float = 0.0
     portion: float = 1.0
-
-    # Final aggregation
     total_cost: float = 0.0
 
 @dataclass
@@ -66,7 +61,6 @@ class Person:
     last_week_final_shift_index: Optional[int]
     impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]
-    calendar_color_id: str = ""
     email: str = ""
 
     def can_work(self, shift_id: int) -> bool:
@@ -75,11 +69,11 @@ class Person:
 @dataclass
 class Schedule:
     """Represents a specific state of assignments."""
-    assignments: Dict[int, List[str]] = field(default_factory=dict) # shift_id -> assignment-slot people
+    assignments: Dict[int, List[str]] = field(default_factory=dict)
 
     def copy(self) -> 'Schedule':
         return Schedule({sid: people.copy() for sid, people in self.assignments.items()})
-    
+
     def get_person_shifts(self, person_id: str) -> List[int]:
         return [sid for sid, people in self.assignments.items() if person_id in people]
 

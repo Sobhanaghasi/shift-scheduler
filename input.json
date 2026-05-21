@@ -2,7 +2,7 @@
   "calendar": {
     "start_date": "2026/05/23",
     "timezone": "Asia/Tehran",
-    "organizer_email": "oncall@example.com"
+    "organizer_email": "test.hamravesh.customer.care@gmail.com"
   },
   "shifts": [
     {"id": 0, "time_index": 0, "calendar_block": "1 - 08:00-15:00", "assignment_weights": [0.8, 0.4]},
@@ -25,7 +25,6 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -2,
-      "calendar_color_id": "1",
       "impossible_shifts": [1, 2, 4],
       "unwanted_coeffs": {"6": 40, "4": 40, "10": 20, "11": 20}
     },
@@ -35,7 +34,6 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -5,
-      "calendar_color_id": "2",
       "impossible_shifts": [0, 1],
       "unwanted_coeffs": {"3": 30, "7": 30, "8": 20, "9": 20}
     },
@@ -45,7 +43,6 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -6,
-      "calendar_color_id": "6",
       "impossible_shifts": [0, 1],
       "unwanted_coeffs": {"4": 40, "5": 20, "6": 40}
     },
@@ -55,7 +52,6 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color_id": "3",
       "impossible_shifts": [0, 5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     },
@@ -65,7 +61,6 @@
       "portion": 1.0,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color_id": "7",
       "impossible_shifts": [0, 5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     },
@@ -75,7 +70,6 @@
       "portion": 1.3,
       "previous_load_ratio": 1,
       "last_week_final_shift_index": -3,
-      "calendar_color_id": "4",
       "impossible_shifts": [5, 6],
       "unwanted_coeffs": {"2": 30, "3": 30, "4": 40}
     }

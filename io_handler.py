@@ -13,8 +13,6 @@ class IOHandler:
         with open(filepath, 'r') as f:
             data = json.load(f)
         
-        # 1. Load Parameters directly from Environment (Config)
-        # The scheduler expects these specific keys
         params = {
             "lambda1_distribution": Config.LAMBDA_DIST,
             "lambda2_load": Config.LAMBDA_LOAD,
@@ -28,7 +26,6 @@ class IOHandler:
             organizer_email=calendar_data.get("organizer_email", ""),
         )
 
-        # 2. Parse Shifts
         shifts = []
         for s_data in data.get("shifts", []):
             shift = Shift(
@@ -40,18 +37,16 @@ class IOHandler:
             )
             shifts.append(shift)
         
-        # 3. Parse People
         people = []
         for p_data in data.get("people", []):
             p = Person(
                 id=p_data["id"],
+                email=p_data.get("email", ""),
                 portion=p_data.get("portion"),
                 previous_load_ratio=p_data.get("previous_load_ratio", 1.0),
                 last_week_final_shift_index=p_data.get("last_week_final_shift_index"),
                 impossible_shifts=set(p_data.get("impossible_shifts", [])),
                 unwanted_coeffs=p_data.get("unwanted_coeffs", {}),
-                calendar_color_id=str(p_data.get("calendar_color_id", "")),
-                email=p_data.get("email", ""),
             )
             people.append(p)
             
@@ -85,4 +80,3 @@ class IOHandler:
                 f.write(ICSExporter.build(res, calendar, people_by_id, shifts_by_id))
                 
         print(f"Successfully saved {len(results)} schedules to {Config.OUTPUT_DIR}/")
-

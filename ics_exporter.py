@@ -7,7 +7,12 @@ from domain import CalendarDetails, Person, Shift, SimulationResult
 
 class ICSExporter:
     @staticmethod
-    def build(res: SimulationResult, calendar: CalendarDetails, people_by_id: Dict[str, Person], shifts_by_id: Dict[int, Shift]) -> str:
+    def build(
+        res: SimulationResult,
+        calendar: CalendarDetails,
+        people_by_id: Dict[str, Person],
+        shifts_by_id: Dict[int, Shift],
+    ) -> str:
         now_stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
         lines = [
             "BEGIN:VCALENDAR",
@@ -15,7 +20,7 @@ class ICSExporter:
             "PRODID:-//Shift Scheduler//EN",
             "CALSCALE:GREGORIAN",
             "METHOD:PUBLISH",
-            "X-WR-CALNAME:Shift Schedule",
+            f"X-WR-CALNAME:{ICSExporter._escape_ics_text('Shift Schedule')}",
             f"X-WR-TIMEZONE:{calendar.timezone}",
         ]
 
@@ -43,10 +48,6 @@ class ICSExporter:
                 if person.email:
                     attendee_name = ICSExporter._escape_ics_param(person_id)
                     lines.append(f"ATTENDEE;CN={attendee_name};ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE:mailto:{person.email}")
-                if person.calendar_color_id:
-                    # Google Calendar event colors are colorId values in the Calendar API.
-                    # ICS import may ignore this non-standard field; it is retained as metadata.
-                    lines.append(f"X-GOOGLE-CALENDAR-COLOR-ID:{person.calendar_color_id}")
                 lines.append("END:VEVENT")
 
         lines.append("END:VCALENDAR")

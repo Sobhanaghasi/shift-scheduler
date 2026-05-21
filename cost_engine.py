@@ -47,8 +47,7 @@ class CostEngine:
         details.portion = person.portion
 
         # 4. Final Aggregation
-        details.final_cost_linear = details.raw_preference_cost + details.weighted_dist_cost + details.weighted_load_cost
-        details.final_cost_squared = details.final_cost_linear ** 2
+        details.total_cost = details.raw_preference_cost + details.weighted_dist_cost + details.weighted_load_cost
         
         return details
 
@@ -107,11 +106,11 @@ class CostEngine:
         }
 
     def calculate_total_global_energy(self, people: List[Person], schedule: Schedule) -> float:
-        """Sum of Squares of all people's costs."""
-        total_sq = 0.0
+        """Sum of all interpretable per-person costs."""
+        total_cost = 0.0
         total_portion = sum(p.portion for p in people)
         for p in people:
             sids = schedule.get_person_shifts(p.id)
             details = self.calculate_person_details(p, sids, total_portion)
-            total_sq += details.final_cost_squared
-        return total_sq
+            total_cost += details.total_cost
+        return total_cost

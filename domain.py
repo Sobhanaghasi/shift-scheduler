@@ -26,9 +26,8 @@ class PersonCostDetails:
     weighted_load_cost: float = 0.0
     portion: float = 1.0
 
-    # Final steps
-    final_cost_linear: float = 0.0
-    final_cost_squared: float = 0.0
+    # Final aggregation
+    total_cost: float = 0.0
 
 @dataclass
 class Person:

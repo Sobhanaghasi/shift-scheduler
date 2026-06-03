@@ -1,10 +1,40 @@
 from __future__ import annotations
+import json
 import os
-from typing import Dict, Any
+from pathlib import Path
+from typing import Any, Dict
 from dotenv import load_dotenv
 load_dotenv()
 
+CONFIG_FILE = "config.json"
+CALENDAR_FILE = "calendar.json"
+SHIFTS_FILE = "shifts.json"
+PEOPLE_FILE = "people.json"
+
+
+def load_json_config() -> Dict[str, Any]:
+    path = Path(CONFIG_FILE)
+    if not path.exists():
+        return {}
+    with path.open("r") as f:
+        return json.load(f)
+
+
+def get_nested(data: Dict[str, Any], keys: tuple[str, ...], default: Any) -> Any:
+    value: Any = data
+    for key in keys:
+        if not isinstance(value, dict) or key not in value:
+            return default
+        value = value[key]
+    return value
+
+
 class Config:
+    CONFIG_FILE = CONFIG_FILE
+    CALENDAR_FILE = CALENDAR_FILE
+    SHIFTS_FILE = SHIFTS_FILE
+    PEOPLE_FILE = PEOPLE_FILE
+
     @staticmethod
     def get_env_float(key: str, default: float) -> float:
         try:
@@ -19,27 +49,22 @@ class Config:
         except (ValueError, TypeError):
             return default
 
-    @staticmethod
-    def get_env_str(key: str, default: str) -> str:
-        return os.getenv(key, default)
+    CONFIG_DATA = load_json_config()
 
-    @staticmethod
-    def get_env_bool(key: str, default: bool) -> bool:
-        value = os.getenv(key)
-        if value is None:
-            return default
-        return value.strip().lower() in {"1", "true", "yes", "on"}
-
-    # Algorithm Settings
+    # Algorithm tuning stays in .env.
     SA_INITIAL_TEMP = get_env_float("SA_INITIAL_TEMP", 1000.0)
     SA_COOLING_RATE = get_env_float("SA_COOLING_RATE", 0.995)
     SA_ITERATIONS = get_env_int("SA_ITERATIONS", 10000)
     SA_RUNS = get_env_int("SA_RUNS", 10)
     MAX_WORKERS = get_env_int("MAX_WORKERS", 5)
-    OUTPUT_DIR = get_env_str("OUTPUT_DIR", "./results")
-    ONE_SHIFT_PER_PERSON_PER_CALENDAR_DAY = get_env_bool("ONE_SHIFT_PER_PERSON_PER_CALENDAR_DAY", True)
 
-    # Business Logic Parameters (Primary Source)
-    LAMBDA_DIST = get_env_float("LAMBDA_DIST", 50.0)
-    LAMBDA_LOAD = get_env_float("LAMBDA_LOAD", 20.0)
-    LAMBDA_RECENCY = get_env_float("LAMBDA_RECENCY", 0.3)
+    # Scheduler policy comes from config.json.
+    OUTPUT_DIR = get_nested(CONFIG_DATA, ("output_dir",), "./results")
+    ONE_SHIFT_PER_PERSON_PER_CALENDAR_DAY = get_nested(
+        CONFIG_DATA,
+        ("hard_constraints", "one_shift_per_person_per_calendar_day"),
+        True,
+    )
+    LAMBDA_DIST = get_nested(CONFIG_DATA, ("cost_function", "lambda_distribution"), 50.0)
+    LAMBDA_LOAD = get_nested(CONFIG_DATA, ("cost_function", "lambda_load"), 20.0)
+    LAMBDA_RECENCY = get_nested(CONFIG_DATA, ("cost_function", "lambda_recency"), 0.3)

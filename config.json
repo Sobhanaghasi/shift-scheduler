@@ -1,0 +1,11 @@
+{
+  "output_dir": "./results",
+  "cost_function": {
+    "lambda_distribution": 8.0,
+    "lambda_load": 36.0,
+    "lambda_recency": 0.6
+  },
+  "hard_constraints": {
+    "one_shift_per_person_per_calendar_day": true
+  }
+}

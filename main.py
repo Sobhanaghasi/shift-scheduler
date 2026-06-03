@@ -19,12 +19,18 @@ def main():
     print("--- Custom AI Scheduler Starting ---")
     
     # 1. Load Data
-    input_file = "input.json"
-    if not os.path.exists(input_file):
-        print(f"Error: {input_file} missing.")
+    required_files = [
+        Config.CONFIG_FILE,
+        Config.CALENDAR_FILE,
+        Config.SHIFTS_FILE,
+        Config.PEOPLE_FILE,
+    ]
+    missing_files = [path for path in required_files if not os.path.exists(path)]
+    if missing_files:
+        print(f"Error: missing required file(s): {', '.join(missing_files)}")
         return
 
-    params, calendar, people, shifts = IOHandler.load_input(input_file)
+    params, calendar, people, shifts = IOHandler.load_input()
     print(f"Loaded {len(people)} people, {len(shifts)} shifts.")
     print(f"Parameters: {params}")
 

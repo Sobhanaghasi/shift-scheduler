@@ -1,0 +1,109 @@
+[
+  {
+    "id": "Sobhan",
+    "email": "sobhan@example.com",
+    "portion": 1.0,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -2,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      1,
+      2,
+      4
+    ],
+    "unwanted_coeffs": {
+      "6": 40,
+      "4": 40,
+      "10": 20,
+      "11": 20
+    }
+  },
+  {
+    "id": "Parsa",
+    "email": "parsa@example.com",
+    "portion": 1.0,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -5,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      0,
+      1
+    ],
+    "unwanted_coeffs": {
+      "3": 30,
+      "7": 30,
+      "8": 20,
+      "9": 20
+    }
+  },
+  {
+    "id": "Mahdi",
+    "email": "mahdi@example.com",
+    "portion": 1.0,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -6,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      0,
+      1
+    ],
+    "unwanted_coeffs": {
+      "4": 40,
+      "5": 20,
+      "6": 40
+    }
+  },
+  {
+    "id": "Mehrshad",
+    "email": "mehrshad@example.com",
+    "portion": 1.0,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -3,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      0,
+      5,
+      6
+    ],
+    "unwanted_coeffs": {
+      "2": 30,
+      "3": 30,
+      "4": 40
+    }
+  },
+  {
+    "id": "Ilgar",
+    "email": "ilgar@example.com",
+    "portion": 1.0,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -3,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      0,
+      5,
+      6
+    ],
+    "unwanted_coeffs": {
+      "2": 30,
+      "3": 30,
+      "4": 40
+    }
+  },
+  {
+    "id": "Mostafa",
+    "email": "mostafa@example.com",
+    "portion": 1.3,
+    "historical_load_ratio": 1,
+    "previous_schedule_final_shift_index": -3,
+    "previous_schedule_final_shift_weight": 1.0,
+    "impossible_shifts": [
+      5,
+      6
+    ],
+    "unwanted_coeffs": {
+      "2": 30,
+      "3": 30,
+      "4": 40
+    }
+  }
+]

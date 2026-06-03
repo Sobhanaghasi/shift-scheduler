@@ -6,10 +6,10 @@ from typing import Any, Dict
 from dotenv import load_dotenv
 load_dotenv()
 
-CONFIG_FILE = "config.json"
-CALENDAR_FILE = "calendar.json"
-SHIFTS_FILE = "shifts.json"
-PEOPLE_FILE = "people.json"
+CONFIG_FILE = "Input/config.json"
+CALENDAR_FILE = "Input/calendar.json"
+SHIFTS_FILE = "Input/shifts.json"
+PEOPLE_FILE = "Input/people.json"
 
 
 def load_json_config() -> Dict[str, Any]:
@@ -59,7 +59,7 @@ class Config:
     MAX_WORKERS = get_env_int("MAX_WORKERS", 5)
 
     # Scheduler policy comes from config.json.
-    OUTPUT_DIR = get_nested(CONFIG_DATA, ("output_dir",), "./results")
+    OUTPUT_DIR = get_nested(CONFIG_DATA, ("output_dir",), "./Output")
     ONE_SHIFT_PER_PERSON_PER_CALENDAR_DAY = get_nested(
         CONFIG_DATA,
         ("hard_constraints", "one_shift_per_person_per_calendar_day"),

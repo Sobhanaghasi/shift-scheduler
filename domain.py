@@ -51,7 +51,7 @@ class PersonCostDetails:
     actual_load: float = 0.0
     expected_load: float = 0.0
     current_load_ratio: float = 0.0
-    previous_load_ratio: float = 1.0
+    historical_load_ratio: float = 1.0
     effective_load_ratio: float = 1.0
     load_ratio_deviation: float = 0.0
     weighted_dist_cost: float = 0.0
@@ -63,8 +63,9 @@ class PersonCostDetails:
 class Person:
     id: str
     portion: float
-    previous_load_ratio: float
-    last_week_final_shift_index: Optional[int]
+    historical_load_ratio: float
+    previous_schedule_final_shift_index: Optional[int]
+    previous_schedule_final_shift_weight: float
     impossible_shifts: set[int]
     unwanted_coeffs: Dict[str, float]
     email: str = ""

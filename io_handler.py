@@ -47,8 +47,9 @@ class IOHandler:
                 id=p_data["id"],
                 email=p_data.get("email", ""),
                 portion=p_data.get("portion"),
-                previous_load_ratio=p_data.get("previous_load_ratio", 1.0),
-                last_week_final_shift_index=p_data.get("last_week_final_shift_index"),
+                historical_load_ratio=p_data.get("historical_load_ratio", 1.0),
+                previous_schedule_final_shift_index=p_data.get("previous_schedule_final_shift_index"),
+                previous_schedule_final_shift_weight=p_data.get("previous_schedule_final_shift_weight", 1.0),
                 impossible_shifts=set(p_data.get("impossible_shifts", [])),
                 unwanted_coeffs=p_data.get("unwanted_coeffs", {}),
             )

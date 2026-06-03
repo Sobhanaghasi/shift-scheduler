@@ -73,9 +73,9 @@ class ICSExporter:
     def _shift_datetimes(calendar: CalendarDetails, shift: Shift) -> Tuple[datetime, datetime]:
         start_time = ICSExporter._parse_time(shift.calendar_start_time)
         end_time = ICSExporter._parse_time(shift.calendar_end_time)
-        week_start = datetime.strptime(calendar.start_date, "%Y/%m/%d")
-        start_date = week_start + timedelta(days=shift.calendar_start_day - 1)
-        end_date = week_start + timedelta(days=shift.calendar_end_day - 1)
+        schedule_start = datetime.strptime(calendar.start_date, "%Y/%m/%d")
+        start_date = schedule_start + timedelta(days=shift.calendar_start_day - 1)
+        end_date = schedule_start + timedelta(days=shift.calendar_end_day - 1)
         start_dt = start_date.replace(hour=start_time[0], minute=start_time[1])
         end_dt = end_date.replace(hour=end_time[0], minute=end_time[1])
         if end_dt <= start_dt:

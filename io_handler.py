@@ -32,7 +32,11 @@ class IOHandler:
                 id=s_data["id"],
                 time_index=s_data["time_index"],
                 assignment_weights=s_data["assignment_weights"],
-                calendar_block=s_data["calendar_block"],
+                calendar_day=s_data["calendar_day"],
+                calendar_start_day=s_data["calendar_start_day"],
+                calendar_start_time=s_data["calendar_start_time"],
+                calendar_end_day=s_data["calendar_end_day"],
+                calendar_end_time=s_data["calendar_end_time"],
                 fixed_assignments=s_data.get("fixed_assignments", []),
             )
             shifts.append(shift)

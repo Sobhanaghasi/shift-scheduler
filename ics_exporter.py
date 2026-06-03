@@ -1,5 +1,4 @@
 from __future__ import annotations
-import re
 import uuid
 from datetime import datetime, timedelta
 from typing import Dict, Tuple
@@ -26,7 +25,7 @@ class ICSExporter:
 
         for shift_id in sorted(res.schedule.assignments):
             shift = shifts_by_id[int(shift_id)]
-            start_dt, end_dt = ICSExporter._shift_datetimes(calendar, shift.calendar_block)
+            start_dt, end_dt = ICSExporter._shift_datetimes(calendar, shift)
             assignees = res.schedule.assignments[shift_id]
             for slot_index, person_id in enumerate(assignees):
                 person = people_by_id[person_id]
@@ -71,19 +70,16 @@ class ICSExporter:
         return f"{number}{suffix}"
 
     @staticmethod
-    def _shift_datetimes(calendar: CalendarDetails, calendar_block: str) -> Tuple[datetime, datetime]:
-        match = re.fullmatch(r"\s*(\d+)\s*-\s*(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\s*", calendar_block)
-        if not match:
-            raise ValueError(f"Invalid calendar_block: {calendar_block}. Expected like '1 - 08:00-15:00'.")
-
-        day_number = int(match.group(1))
-        start_time = ICSExporter._parse_time(match.group(2))
-        end_time = ICSExporter._parse_time(match.group(3))
-        start_date = datetime.strptime(calendar.start_date, "%Y/%m/%d") + timedelta(days=day_number - 1)
+    def _shift_datetimes(calendar: CalendarDetails, shift: Shift) -> Tuple[datetime, datetime]:
+        start_time = ICSExporter._parse_time(shift.calendar_start_time)
+        end_time = ICSExporter._parse_time(shift.calendar_end_time)
+        week_start = datetime.strptime(calendar.start_date, "%Y/%m/%d")
+        start_date = week_start + timedelta(days=shift.calendar_start_day - 1)
+        end_date = week_start + timedelta(days=shift.calendar_end_day - 1)
         start_dt = start_date.replace(hour=start_time[0], minute=start_time[1])
-        end_dt = start_date.replace(hour=end_time[0], minute=end_time[1])
+        end_dt = end_date.replace(hour=end_time[0], minute=end_time[1])
         if end_dt <= start_dt:
-            end_dt += timedelta(days=1)
+            raise ValueError(f"Shift {shift.id} calendar end must be after calendar start.")
         return start_dt, end_dt
 
     @staticmethod

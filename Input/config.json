@@ -1,8 +1,8 @@
 {
   "output_dir": "./Output",
   "cost_function": {
-    "lambda_distribution": 8.0,
-    "lambda_load": 36.0,
+    "lambda_distribution": 2400.0,
+    "lambda_load": 360.0,
     "lambda_recency": 0.6
   },
   "hard_constraints": {

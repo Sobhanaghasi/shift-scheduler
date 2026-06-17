@@ -1,22 +1,43 @@
-# Chejooli
+# Chejooli Core
 
-A small shift scheduler using simulated annealing, hard constraints, and interpretable soft costs.
+`chejooli-core` is the scheduling engine for Chejooli. It can be used as a simple CLI app or installed as a Python package by the backend.
 
-For optimization formulas, see [FORMULAS.md](FORMULAS.md).
+For optimization formulas, see [FORMULAS.md](FORMULAS.md). For Python/backend usage, see [API.md](API.md).
 
-## Run
-
-Edit the files in `Input/`, then run:
+## Install for Local Use
 
 ```bash
-venv/bin/python main.py
+python -m venv .venv
+.venv/bin/pip install -e .
 ```
 
-The best three schedules are saved in `Output/`.
+## CLI
+
+Default input/output folders:
+
+```bash
+chejooli solve
+```
+
+Explicit folders:
+
+```bash
+chejooli solve --input ./Input --output ./Output
+```
+
+Generate calendar files too:
+
+```bash
+chejooli solve --ics
+```
+
+By default the CLI writes JSON reports only. `--ics` also writes `.ics` files.
 
 ## Input Files
 
-### `Input/calendar.json`
+The CLI reads four files from the input directory.
+
+### `calendar.json`
 
 ```json
 {
@@ -26,11 +47,11 @@ The best three schedules are saved in `Output/`.
 }
 ```
 
-- `start_date`: day 1 of this schedule unit, in `YYYY/MM/DD`.
-- `timezone`: IANA timezone used by ICS events.
+- `start_date`: day 1 of the schedule unit, in `YYYY/MM/DD`.
+- `timezone`: IANA timezone used in ICS exports.
 - `organizer_email`: organizer written into calendar events.
 
-### `Input/shifts.json`
+### `shifts.json`
 
 ```json
 {
@@ -46,17 +67,15 @@ The best three schedules are saved in `Output/`.
 }
 ```
 
-- `id`: unique numeric shift identifier.
-- `time_index`: chronological position used by the distribution cost.
-- `assignment_weights`: one entry per required person. Order defines primary, secondary, third, etc.; weight represents workload.
-- `fixed_assignments`: optional list aligned with `assignment_weights`. Use a person ID to fix that role or `null` to let the scheduler assign it.
-- `calendar_day`: logical day used by the one-shift-per-day hard constraint.
-- `calendar_start_day` / `calendar_end_day`: day numbers relative to `calendar.start_date`.
-- `calendar_start_time` / `calendar_end_time`: 24-hour `HH:MM` values used in the ICS calendar.
+- `id`: unique shift ID.
+- `time_index`: chronological index used by spacing/distribution cost.
+- `assignment_weights`: one required person per item; order means primary, secondary, third, etc.
+- `fixed_assignments`: optional list aligned with `assignment_weights`; use `null` for scheduler-chosen roles.
+- `calendar_day`: logical day used by hard constraints.
+- `calendar_start_day` / `calendar_end_day`: event day numbers relative to `calendar.start_date`.
+- `calendar_start_time` / `calendar_end_time`: event times in `HH:MM`.
 
-`calendar_day` is separate from event start/end days so an overnight shift can belong to one logical day while ending the next day.
-
-### `Input/people.json`
+### `people.json`
 
 ```json
 {
@@ -67,25 +86,20 @@ The best three schedules are saved in `Output/`.
   "previous_schedule_final_shift_index": -2,
   "previous_schedule_final_shift_weight": 1.0,
   "impossible_shifts": [1, 2],
-  "unwanted_coeffs": {
-    "6": 40,
-    "10": 20
-  }
+  "unwanted_coeffs": {"6": 40}
 }
 ```
 
-- `id`: unique person ID; also used by fixed assignments.
-- `email`: attendee address written into ICS events.
-- `portion`: relative workload capacity. A person with portion `2` should receive twice the load of someone with portion `1`.
-- `historical_load_ratio`: moving historical fairness ratio. `1` is balanced, above `1` is historically overloaded, below `1` is underloaded.
-- `previous_schedule_final_shift_index`: time index of this person's final assignment in the previous schedule unit. Use `null` when unavailable.
-- `previous_schedule_final_shift_weight`: workload weight of that previous final assignment.
-- `impossible_shifts`: hard constraint; these shift IDs can never be assigned.
-- `unwanted_coeffs`: soft penalties keyed by shift ID. Higher values make the assignment less desirable.
+- `portion`: relative expected workload share.
+- `historical_load_ratio`: moving load history; `1` means balanced.
+- `previous_schedule_final_shift_index`: previous schedule boundary index; use `null` if unavailable.
+- `previous_schedule_final_shift_weight`: workload of that previous boundary shift.
+- `impossible_shifts`: hard constraints.
+- `unwanted_coeffs`: soft penalties by shift ID.
 
 All shifts not listed in `impossible_shifts` are allowed.
 
-### `Input/config.json`
+### `config.json`
 
 ```json
 {
@@ -101,31 +115,30 @@ All shifts not listed in `impossible_shifts` are allowed.
 }
 ```
 
-- `output_dir`: destination for generated reports and calendars.
-- `lambda_distribution`: importance of spreading workload across time.
-- `lambda_load`: importance of matching each person's portion-based fair load.
-- `lambda_recency`: current schedule weight in load history, from `0` to `1`. For example, `0.6` means 60% current and 40% historical.
-- `one_shift_per_person_per_calendar_day`: when `true`, a person cannot receive two shifts with the same `calendar_day`.
+- `lambda_distribution`: importance of spreading workload over time.
+- `lambda_load`: importance of fair portion-based load.
+- `lambda_recency`: current schedule weight in load history; `0.6` means 60% current and 40% history.
+- `one_shift_per_person_per_calendar_day`: prevents assigning one person twice on the same logical day.
 
-Unwanted-shift cost has no separate lambda; its coefficients are defined per person in `people.json`.
+## Algorithm Environment
 
-## Algorithm Settings
+Optional `.env` values tune the annealing search:
 
-`.env` contains implementation-level simulated-annealing settings:
+```env
+SA_INITIAL_TEMP=20
+SA_COOLING_RATE=0.9985
+SA_ITERATIONS=2000
+SA_RUNS=25
+MAX_WORKERS=25
+```
 
-- `SA_INITIAL_TEMP`: starting exploration temperature.
-- `SA_COOLING_RATE`: temperature multiplier per iteration.
-- `SA_ITERATIONS`: iterations per simulation.
-- `SA_RUNS`: number of independent simulations.
-- `MAX_WORKERS`: maximum parallel processes.
-
-Most users should only edit files under `Input/`.
+These are CLI/runtime settings, not scheduling policy.
 
 ## Outputs
 
-For each of the top three schedules:
+For each top schedule:
 
-- `best_schedule_N.json`: assignments, global score, and per-person cost breakdown.
-- `best_schedule_N.ics`: one calendar file containing all assigned events.
+- `best_schedule_N.json`: assignments and cost breakdown.
+- `best_schedule_N.ics`: optional calendar export when `--ics` is used.
 
-Lower global cost is better. Generated files in `Output/` are overwritten on the next run.
+Lower global cost is better.

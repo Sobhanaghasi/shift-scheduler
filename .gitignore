@@ -4,3 +4,4 @@ __pycache__/
 Output/
 results/
 old results/
+*.egg-info/

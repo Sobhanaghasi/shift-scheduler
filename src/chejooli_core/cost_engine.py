@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Dict
-from domain import Person, Shift, PersonCostDetails, AssignedRole
+from .domain import Person, Shift, PersonCostDetails, AssignedRole
 
 class CostEngine:
     def __init__(self, shifts: Dict[int, Shift], params: Dict[str, float]):

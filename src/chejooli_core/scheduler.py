@@ -2,19 +2,19 @@ from __future__ import annotations
 import math
 import random
 from typing import Dict, List
-from domain import Schedule, Person, Shift, SimulationResult
-from cost_engine import CostEngine
-from config import Config
+from .domain import Schedule, Person, Shift, SimulationResult
+from .cost_engine import CostEngine
+from .models import AlgorithmConfig, SchedulerConfig
 
 class Scheduler:
-    def __init__(self, people: List[Person], shifts: List[Shift], cost_engine: CostEngine):
+    def __init__(self, people: List[Person], shifts: List[Shift], cost_engine: CostEngine, scheduler_config: SchedulerConfig, algorithm_config: AlgorithmConfig):
         self.people = people
         self.people_by_id = {p.id: p for p in people}
         self.shifts = shifts
         self.shift_map = {s.id: s for s in shifts}
         self.cost_engine = cost_engine
         self.shift_ids = [s.id for s in shifts]
-        self.enforce_one_shift_per_day = Config.ONE_SHIFT_PER_PERSON_PER_CALENDAR_DAY
+        self.enforce_one_shift_per_day = scheduler_config.one_shift_per_person_per_calendar_day
         self.fixed_roles_by_person_day = self._build_fixed_roles_by_person_day()
         self.mutable_slots = [
             (s.id, slot_index)
@@ -24,9 +24,9 @@ class Scheduler:
         ]
 
         # Optimization Params
-        self.initial_temp = Config.SA_INITIAL_TEMP
-        self.cooling_rate = Config.SA_COOLING_RATE
-        self.iterations = Config.SA_ITERATIONS
+        self.initial_temp = algorithm_config.initial_temp
+        self.cooling_rate = algorithm_config.cooling_rate
+        self.iterations = algorithm_config.iterations
 
     def _build_fixed_roles_by_person_day(self) -> Dict[tuple[str, int], List[tuple[int, int]]]:
         fixed_roles: Dict[tuple[str, int], List[tuple[int, int]]] = {}

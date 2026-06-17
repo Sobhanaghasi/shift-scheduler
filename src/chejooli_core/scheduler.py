@@ -7,7 +7,10 @@ from .cost_engine import CostEngine
 from .models import AlgorithmConfig, SchedulerConfig
 
 class Scheduler:
+    """Simulated annealing optimizer over valid shift-slot assignments."""
+
     def __init__(self, people: List[Person], shifts: List[Shift], cost_engine: CostEngine, scheduler_config: SchedulerConfig, algorithm_config: AlgorithmConfig):
+        """Prepare hard-constraint state and annealing parameters."""
         self.people = people
         self.people_by_id = {p.id: p for p in people}
         self.shifts = shifts
@@ -23,12 +26,12 @@ class Scheduler:
             if not s.is_fixed_slot(slot_index)
         ]
 
-        # Optimization Params
         self.initial_temp = algorithm_config.initial_temp
         self.cooling_rate = algorithm_config.cooling_rate
         self.iterations = algorithm_config.iterations
 
     def _build_fixed_roles_by_person_day(self) -> Dict[tuple[str, int], List[tuple[int, int]]]:
+        """Index fixed assignments for same-day hard-constraint checks."""
         fixed_roles: Dict[tuple[str, int], List[tuple[int, int]]] = {}
         for shift in self.shifts:
             fixed_people = [pid for pid in shift.fixed_assignments if pid is not None]
@@ -57,6 +60,7 @@ class Scheduler:
         excluded_person_id: str | None = None,
         current_role: tuple[int, int] | None = None,
     ) -> List[str]:
+        """Return people who can fill a slot without breaking hard constraints."""
         return [
             p.id for p in self.people
             if p.can_work(shift_id)
@@ -72,6 +76,7 @@ class Scheduler:
         assignments: Dict[int, List[str]],
         current_role: tuple[int, int] | None = None,
     ) -> bool:
+        """Return whether assigning a person would duplicate their logical day."""
         if not self.enforce_one_shift_per_day:
             return False
 
@@ -91,6 +96,7 @@ class Scheduler:
         return False
 
     def _validate_fixed_assignment(self, shift: Shift, slot_index: int, person_id: str, assignments: List[str]):
+        """Reject fixed assignments that reference impossible or duplicate people."""
         person = self.people_by_id.get(person_id)
         if person is None:
             raise ValueError(f"Shift {shift.id} slot {slot_index} is fixed to unknown person {person_id}.")
@@ -100,6 +106,7 @@ class Scheduler:
             raise ValueError(f"Shift {shift.id} assigns {person_id} more than once.")
 
     def _generate_initial_valid_schedule(self) -> Schedule:
+        """Build one complete schedule that satisfies all hard constraints."""
         assignments: Dict[int, List[str | None]] = {
             shift.id: [None] * shift.slot_count()
             for shift in self.shifts
@@ -126,6 +133,7 @@ class Scheduler:
         ]
 
         def candidate_ids(shift_id: int, slot_index: int) -> List[str]:
+            """Return current candidates for a partially assigned slot."""
             existing_people = [
                 pid for idx, pid in enumerate(assignments[shift_id])
                 if idx != slot_index and pid is not None
@@ -138,6 +146,7 @@ class Scheduler:
             )
 
         def assign_remaining() -> bool:
+            """Backtrack through unassigned slots until all are filled."""
             unassigned_slots = [
                 role for role in mutable_slots
                 if assignments[role[0]][role[1]] is None
@@ -164,6 +173,7 @@ class Scheduler:
         })
 
     def solve(self, run_id: int) -> SimulationResult:
+        """Run one annealing search and return its best schedule."""
         current_schedule = self._generate_initial_valid_schedule()
         current_energy = self.cost_engine.calculate_total_global_energy(self.people, current_schedule)
 
@@ -176,7 +186,6 @@ class Scheduler:
             if not self.mutable_slots:
                 break
 
-            # 1. Mutate one non-fixed assignment slot
             shift_to_swap, slot_index = random.choice(self.mutable_slots)
             current_shift_assignments = current_schedule.assignments[shift_to_swap]
             current_owner = current_shift_assignments[slot_index]
@@ -195,14 +204,11 @@ class Scheduler:
 
             new_owner = random.choice(candidates)
 
-            # Create neighbor
             neighbor_schedule = current_schedule.copy()
             neighbor_schedule.assignments[shift_to_swap][slot_index] = new_owner
 
-            # 2. Evaluate
             neighbor_energy = self.cost_engine.calculate_total_global_energy(self.people, neighbor_schedule)
 
-            # 3. Acceptance Logic
             delta = neighbor_energy - current_energy
 
             if delta < 0:
@@ -216,10 +222,8 @@ class Scheduler:
                     current_schedule = neighbor_schedule
                     current_energy = neighbor_energy
 
-            # 4. Cool down
             temp *= self.cooling_rate
 
-        # 5. Generate full details for the best result
         final_details = {}
         total_portion = sum(p.portion for p in self.people)
         for p in self.people:
@@ -227,8 +231,8 @@ class Scheduler:
             final_details[p.id] = self.cost_engine.calculate_person_details(p, roles, total_portion)
 
         return SimulationResult(
-            rank=0, # Assigned later
+            rank=0,
             energy=best_energy,
             schedule=best_schedule,
-            details=final_details
+            details=final_details,
         )

@@ -1,7 +1,8 @@
 from __future__ import annotations
 import uuid
 from datetime import datetime, timedelta
-from typing import Dict, Tuple
+from pathlib import Path
+from typing import Tuple
 from .domain import CalendarDetails, Person, Shift
 from .models import RankedSchedule
 
@@ -12,6 +13,7 @@ def build_ics(
     people: list[Person],
     shifts: list[Shift],
 ) -> str:
+    """Render one ranked schedule as an iCalendar document."""
     people_by_id = {person.id: person for person in people}
     shifts_by_id = {shift.id: shift for shift in shifts}
     now_stamp = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
@@ -66,7 +68,7 @@ def save_ics_files(
     shifts: list[Shift],
     output_dir: str,
 ) -> None:
-    from pathlib import Path
+    """Write one ICS file per ranked schedule."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     for ranked_schedule in ranked_schedules:
@@ -75,6 +77,7 @@ def save_ics_files(
 
 
 def _role_label(slot_index: int) -> str:
+    """Return the human role label for an assignment slot."""
     if slot_index == 0:
         return "Primary On-Call"
     if slot_index == 1:
@@ -83,6 +86,7 @@ def _role_label(slot_index: int) -> str:
 
 
 def _ordinal(number: int) -> str:
+    """Format a positive integer as an English ordinal."""
     if 10 <= number % 100 <= 20:
         suffix = "th"
     else:
@@ -91,6 +95,7 @@ def _ordinal(number: int) -> str:
 
 
 def _shift_datetimes(calendar: CalendarDetails, shift: Shift) -> Tuple[datetime, datetime]:
+    """Convert a shift's relative calendar fields into datetimes."""
     start_time = _parse_time(shift.calendar_start_time)
     end_time = _parse_time(shift.calendar_end_time)
     schedule_start = datetime.strptime(calendar.start_date, "%Y/%m/%d")
@@ -104,6 +109,7 @@ def _shift_datetimes(calendar: CalendarDetails, shift: Shift) -> Tuple[datetime,
 
 
 def _parse_time(value: str) -> Tuple[int, int]:
+    """Parse an HH:MM time string."""
     hour_str, minute_str = value.split(":")
     hour = int(hour_str)
     minute = int(minute_str)
@@ -113,8 +119,10 @@ def _parse_time(value: str) -> Tuple[int, int]:
 
 
 def _escape_ics_param(value: str) -> str:
+    """Escape a value used in an ICS parameter."""
     return value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace(":", "\\:")
 
 
 def _escape_ics_text(value: str) -> str:
+    """Escape a text value used in an ICS property."""
     return value.replace("\\", "\\\\").replace(";", "\\;").replace(",", "\\,").replace("\n", "\\n")

@@ -8,6 +8,7 @@ from .models import AlgorithmConfig, ScheduleRequest, ScheduleResult, SchedulerC
 
 
 def load_request_from_directory(input_dir: str | os.PathLike[str] = "Input") -> ScheduleRequest:
+    """Load a ScheduleRequest from the CLI input directory layout."""
     input_path = Path(input_dir)
     calendar_data = _read_json(input_path / "calendar.json")
     shifts_data = _read_json(input_path / "shifts.json")
@@ -39,6 +40,7 @@ def load_request_from_directory(input_dir: str | os.PathLike[str] = "Input") -> 
 
 
 def apply_algorithm_env(request: ScheduleRequest) -> ScheduleRequest:
+    """Overlay optional CLI runtime tuning from environment variables."""
     request.algorithm_config = AlgorithmConfig(
         initial_temp=_env_float("SA_INITIAL_TEMP", request.algorithm_config.initial_temp),
         cooling_rate=_env_float("SA_COOLING_RATE", request.algorithm_config.cooling_rate),
@@ -50,6 +52,7 @@ def apply_algorithm_env(request: ScheduleRequest) -> ScheduleRequest:
 
 
 def save_result_to_directory(result: ScheduleResult, output_dir: str | os.PathLike[str]) -> None:
+    """Write ranked schedule JSON reports to an output directory."""
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     for ranked_schedule in result.ranked_schedules:
@@ -59,11 +62,13 @@ def save_result_to_directory(result: ScheduleResult, output_dir: str | os.PathLi
 
 
 def _read_json(path: Path) -> Any:
+    """Read one JSON file and return its decoded value."""
     with path.open("r") as f:
         return json.load(f)
 
 
 def _shift_from_dict(data: dict[str, Any]) -> Shift:
+    """Build a Shift from decoded JSON data."""
     return Shift(
         id=data["id"],
         time_index=data["time_index"],
@@ -78,6 +83,7 @@ def _shift_from_dict(data: dict[str, Any]) -> Shift:
 
 
 def _person_from_dict(data: dict[str, Any]) -> Person:
+    """Build a Person from decoded JSON data."""
     return Person(
         id=data["id"],
         email=data.get("email", ""),
@@ -91,6 +97,7 @@ def _person_from_dict(data: dict[str, Any]) -> Person:
 
 
 def _env_float(key: str, default: float) -> float:
+    """Read a float environment variable with a fallback."""
     try:
         return float(os.getenv(key, default))
     except (TypeError, ValueError):
@@ -98,6 +105,7 @@ def _env_float(key: str, default: float) -> float:
 
 
 def _env_int(key: str, default: int) -> int:
+    """Read an integer environment variable with a fallback."""
     try:
         return int(os.getenv(key, default))
     except (TypeError, ValueError):

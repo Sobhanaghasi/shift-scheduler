@@ -9,6 +9,7 @@ from .models import ScheduleInfeasibleError, ScheduleValidationError
 
 
 def main(argv: list[str] | None = None) -> int:
+    """Parse CLI arguments and dispatch the requested command."""
     parser = argparse.ArgumentParser(prog="chejooli")
     subparsers = parser.add_subparsers(dest="command")
 
@@ -29,6 +30,7 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _solve(args) -> int:
+    """Load file inputs, solve the request, and write selected outputs."""
     load_dotenv()
     try:
         request = apply_algorithm_env(load_request_from_directory(args.input))

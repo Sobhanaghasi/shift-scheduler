@@ -13,6 +13,7 @@ from .scheduler import Scheduler
 
 
 def validate_schedule_request(request: ScheduleRequest) -> list[ValidationIssue]:
+    """Return structural validation issues without running the optimizer."""
     issues: list[ValidationIssue] = []
     shift_ids = [shift.id for shift in request.shifts]
     person_ids = [person.id for person in request.people]
@@ -66,6 +67,7 @@ def validate_schedule_request(request: ScheduleRequest) -> list[ValidationIssue]
 
 
 def solve_schedule(request: ScheduleRequest) -> ScheduleResult:
+    """Solve a schedule request and return ranked candidate schedules."""
     issues = validate_schedule_request(request)
     if issues:
         raise ScheduleValidationError(issues)
@@ -101,6 +103,7 @@ def solve_schedule(request: ScheduleRequest) -> ScheduleResult:
 
 
 def _run_simulation(run_id: int, request: ScheduleRequest):
+    """Run one independent annealing simulation for parallel search."""
     shift_map = {shift.id: shift for shift in request.shifts}
     engine = CostEngine(shift_map, request.scheduler_config.cost_params())
     solver = Scheduler(

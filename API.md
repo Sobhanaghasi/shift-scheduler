@@ -89,28 +89,9 @@ from chejooli_core import ScheduleInfeasibleError, ScheduleValidationError
 try:
     result = solve_schedule(request)
 except ScheduleValidationError as exc:
-    # invalid input, map to HTTP 400
     issues = [issue.to_dict() for issue in exc.issues]
 except ScheduleInfeasibleError as exc:
-    # valid input, impossible hard constraints, map to HTTP 422
     issues = [issue.to_dict() for issue in exc.issues]
 ```
 
 Validation errors mean the request is malformed or inconsistent. Infeasible errors mean the request is valid but no schedule satisfies the hard constraints.
-
-## Optional ICS Export
-
-ICS is not part of solving. Generate it explicitly only when needed:
-
-```python
-from chejooli_core.ics_exporter import build_ics
-
-ics_text = build_ics(
-    result.ranked_schedules[0],
-    request.calendar,
-    request.people,
-    request.shifts,
-)
-```
-
-The backend can ignore ICS completely unless it wants calendar exports.

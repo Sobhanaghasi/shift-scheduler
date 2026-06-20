@@ -20,10 +20,6 @@ def load_request_from_directory(input_dir: str | os.PathLike[str] = "Input") -> 
         lambda_distribution=config_data.get("cost_function", {}).get("lambda_distribution", 50.0),
         lambda_load=config_data.get("cost_function", {}).get("lambda_load", 20.0),
         lambda_recency=config_data.get("cost_function", {}).get("lambda_recency", 0.3),
-        one_shift_per_person_per_calendar_day=config_data.get("hard_constraints", {}).get(
-            "one_shift_per_person_per_calendar_day",
-            True,
-        ),
     )
 
     return ScheduleRequest(
@@ -73,11 +69,11 @@ def _shift_from_dict(data: dict[str, Any]) -> Shift:
         id=data["id"],
         time_index=data["time_index"],
         assignment_weights=data["assignment_weights"],
-        calendar_day=data["calendar_day"],
         calendar_start_day=data["calendar_start_day"],
         calendar_start_time=data["calendar_start_time"],
         calendar_end_day=data["calendar_end_day"],
         calendar_end_time=data["calendar_end_time"],
+        conflicting_shifts=data.get("conflicting_shifts", []),
         fixed_assignments=data.get("fixed_assignments", []),
     )
 

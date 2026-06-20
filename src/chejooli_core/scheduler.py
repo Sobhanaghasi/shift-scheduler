@@ -4,12 +4,12 @@ import random
 from typing import Dict, List
 from .domain import Schedule, Person, Shift, SimulationResult
 from .cost_engine import CostEngine
-from .models import AlgorithmConfig, SchedulerConfig
+from .models import AlgorithmConfig
 
 class Scheduler:
     """Simulated annealing optimizer over valid shift-slot assignments."""
 
-    def __init__(self, people: List[Person], shifts: List[Shift], cost_engine: CostEngine, scheduler_config: SchedulerConfig, algorithm_config: AlgorithmConfig):
+    def __init__(self, people: List[Person], shifts: List[Shift], cost_engine: CostEngine, algorithm_config: AlgorithmConfig):
         """Prepare hard-constraint state and annealing parameters."""
         self.people = people
         self.people_by_id = {p.id: p for p in people}
@@ -17,8 +17,8 @@ class Scheduler:
         self.shift_map = {s.id: s for s in shifts}
         self.cost_engine = cost_engine
         self.shift_ids = [s.id for s in shifts]
-        self.enforce_one_shift_per_day = scheduler_config.one_shift_per_person_per_calendar_day
-        self.fixed_roles_by_person_day = self._build_fixed_roles_by_person_day()
+        self.conflicting_shift_ids = self._build_conflicting_shift_ids()
+        self._validate_fixed_assignments()
         self.mutable_slots = [
             (s.id, slot_index)
             for s in shifts
@@ -30,9 +30,21 @@ class Scheduler:
         self.cooling_rate = algorithm_config.cooling_rate
         self.iterations = algorithm_config.iterations
 
-    def _build_fixed_roles_by_person_day(self) -> Dict[tuple[str, int], List[tuple[int, int]]]:
-        """Index fixed assignments for same-day hard-constraint checks."""
-        fixed_roles: Dict[tuple[str, int], List[tuple[int, int]]] = {}
+    def _build_conflicting_shift_ids(self) -> Dict[int, set[int]]:
+        """Return a symmetric map of shift IDs that cannot share a person."""
+        conflicts: Dict[int, set[int]] = {shift.id: set() for shift in self.shifts}
+        for shift in self.shifts:
+            for conflicting_shift_id in shift.conflicting_shifts:
+                conflicts[shift.id].add(conflicting_shift_id)
+                conflicts[conflicting_shift_id].add(shift.id)
+        return conflicts
+
+    def _validate_fixed_assignments(self) -> None:
+        """Reject fixed assignments that already break hard constraints."""
+        assignments: Dict[int, List[str | None]] = {
+            shift.id: [None] * shift.slot_count()
+            for shift in self.shifts
+        }
         for shift in self.shifts:
             fixed_people = [pid for pid in shift.fixed_assignments if pid is not None]
             if len(fixed_people) != len(set(fixed_people)):
@@ -40,17 +52,13 @@ class Scheduler:
             for slot_index, person_id in enumerate(shift.fixed_assignments):
                 if person_id is None:
                     continue
-                self._validate_fixed_assignment(shift, slot_index, person_id, [])
-                key = (person_id, shift.calendar_day)
-                fixed_roles.setdefault(key, []).append((shift.id, slot_index))
-
-        if self.enforce_one_shift_per_day:
-            for (person_id, calendar_day), roles in fixed_roles.items():
-                if len(roles) > 1:
+                self._validate_fixed_assignment(shift, slot_index, person_id, assignments[shift.id])
+                if self._violates_shift_conflict(person_id, shift.id, assignments, (shift.id, slot_index)):
                     raise ValueError(
-                        f"{person_id} has multiple fixed assignments on calendar day {calendar_day}: {roles}."
+                        f"Shift {shift.id} slot {slot_index} is fixed to {person_id}, "
+                        "but they already have a conflicting fixed shift."
                     )
-        return fixed_roles
+                assignments[shift.id][slot_index] = person_id
 
     def _eligible_people_for_slot(
         self,
@@ -66,33 +74,26 @@ class Scheduler:
             if p.can_work(shift_id)
             and p.id not in existing_assignments
             and p.id != excluded_person_id
-            and not self._violates_daily_limit(p.id, shift_id, assignments, current_role)
+            and not self._violates_shift_conflict(p.id, shift_id, assignments, current_role)
         ]
 
-    def _violates_daily_limit(
+    def _violates_shift_conflict(
         self,
         person_id: str,
         shift_id: int,
         assignments: Dict[int, List[str]],
         current_role: tuple[int, int] | None = None,
     ) -> bool:
-        """Return whether assigning a person would duplicate their logical day."""
-        if not self.enforce_one_shift_per_day:
-            return False
-
-        calendar_day = self.shift_map[shift_id].calendar_day
+        """Return whether assigning a person would violate shift conflicts."""
+        conflicting_shift_ids = self.conflicting_shift_ids[shift_id]
         for assigned_shift_id, assigned_people in assignments.items():
-            if self.shift_map[assigned_shift_id].calendar_day != calendar_day:
+            if assigned_shift_id not in conflicting_shift_ids:
                 continue
             for slot_index, assigned_person_id in enumerate(assigned_people):
                 if current_role == (assigned_shift_id, slot_index):
                     continue
                 if assigned_person_id == person_id:
                     return True
-
-        for fixed_role in self.fixed_roles_by_person_day.get((person_id, calendar_day), []):
-            if current_role != fixed_role:
-                return True
         return False
 
     def _validate_fixed_assignment(self, shift: Shift, slot_index: int, person_id: str, assignments: List[str]):
@@ -116,10 +117,10 @@ class Scheduler:
             for slot_index, fixed_person_id in enumerate(shift.fixed_assignments):
                 if fixed_person_id is None:
                     continue
-                if self._violates_daily_limit(fixed_person_id, shift.id, assignments, (shift.id, slot_index)):
+                if self._violates_shift_conflict(fixed_person_id, shift.id, assignments, (shift.id, slot_index)):
                     raise ValueError(
                         f"Shift {shift.id} slot {slot_index} is fixed to {fixed_person_id}, "
-                        f"but they already have a shift on calendar day {shift.calendar_day}."
+                        "but they already have a conflicting shift."
                     )
                 if fixed_person_id in [pid for pid in assignments[shift.id] if pid is not None]:
                     raise ValueError(f"Shift {shift.id} assigns {fixed_person_id} more than once.")

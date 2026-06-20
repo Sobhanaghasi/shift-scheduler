@@ -54,10 +54,11 @@ request = ScheduleRequest(
 )
 ```
 
-`SchedulerConfig` contains scheduling policy:
+Hard constraints live on `Person.impossible_shifts`, `Shift.conflicting_shifts`, and fixed assignments.
+
+`SchedulerConfig` contains scheduler policy:
 
 - cost lambdas
-- hard constraints
 - output directory for CLI use
 
 `AlgorithmConfig` contains runtime search settings:

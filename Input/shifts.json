@@ -6,7 +6,9 @@
       0.8,
       0.4
     ],
-    "calendar_day": 1,
+    "conflicting_shifts": [
+      1
+    ],
     "calendar_start_day": 1,
     "calendar_start_time": "08:00",
     "calendar_end_day": 1,
@@ -19,7 +21,6 @@
       0.7,
       0.3
     ],
-    "calendar_day": 1,
     "calendar_start_day": 1,
     "calendar_start_time": "15:00",
     "calendar_end_day": 1,
@@ -32,7 +33,9 @@
       0.8,
       0.4
     ],
-    "calendar_day": 2,
+    "conflicting_shifts": [
+      3
+    ],
     "calendar_start_day": 2,
     "calendar_start_time": "08:00",
     "calendar_end_day": 2,
@@ -45,7 +48,6 @@
       0.7,
       0.3
     ],
-    "calendar_day": 2,
     "calendar_start_day": 2,
     "calendar_start_time": "15:00",
     "calendar_end_day": 2,
@@ -58,7 +60,9 @@
       0.8,
       0.4
     ],
-    "calendar_day": 3,
+    "conflicting_shifts": [
+      5
+    ],
     "calendar_start_day": 3,
     "calendar_start_time": "08:00",
     "calendar_end_day": 3,
@@ -71,7 +75,6 @@
       0.7,
       0.3
     ],
-    "calendar_day": 3,
     "calendar_start_day": 3,
     "calendar_start_time": "15:00",
     "calendar_end_day": 3,
@@ -84,7 +87,9 @@
       0.8,
       0.4
     ],
-    "calendar_day": 4,
+    "conflicting_shifts": [
+      7
+    ],
     "calendar_start_day": 4,
     "calendar_start_time": "08:00",
     "calendar_end_day": 4,
@@ -97,7 +102,6 @@
       0.7,
       0.3
     ],
-    "calendar_day": 4,
     "calendar_start_day": 4,
     "calendar_start_time": "15:00",
     "calendar_end_day": 4,
@@ -110,7 +114,9 @@
       0.8,
       0.4
     ],
-    "calendar_day": 5,
+    "conflicting_shifts": [
+      9
+    ],
     "calendar_start_day": 5,
     "calendar_start_time": "08:00",
     "calendar_end_day": 5,
@@ -123,7 +129,6 @@
       0.7,
       0.3
     ],
-    "calendar_day": 5,
     "calendar_start_day": 5,
     "calendar_start_time": "15:00",
     "calendar_end_day": 5,
@@ -140,7 +145,6 @@
       null,
       "Mostafa"
     ],
-    "calendar_day": 6,
     "calendar_start_day": 6,
     "calendar_start_time": "08:00",
     "calendar_end_day": 6,
@@ -152,7 +156,6 @@
     "assignment_weights": [
       2.0
     ],
-    "calendar_day": 7,
     "calendar_start_day": 7,
     "calendar_start_time": "08:00",
     "calendar_end_day": 7,

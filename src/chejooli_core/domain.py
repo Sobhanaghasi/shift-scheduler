@@ -11,11 +11,11 @@ class Shift:
     id: int
     time_index: int
     assignment_weights: List[float]
-    calendar_day: int
     calendar_start_day: int
     calendar_start_time: str
     calendar_end_day: int
     calendar_end_time: str
+    conflicting_shifts: List[int] = field(default_factory=list)
     fixed_assignments: List[Optional[str]] = field(default_factory=list)
 
     def __post_init__(self):
@@ -26,7 +26,7 @@ class Shift:
             raise ValueError(f"Shift {self.id} assignment weights must be greater than 0")
         if len(self.fixed_assignments) > len(self.assignment_weights):
             raise ValueError(f"Shift {self.id} has more fixed assignments than assignment slots")
-        if self.calendar_day <= 0 or self.calendar_start_day <= 0 or self.calendar_end_day <= 0:
+        if self.calendar_start_day <= 0 or self.calendar_end_day <= 0:
             raise ValueError(f"Shift {self.id} calendar day fields must be greater than 0")
         self.fixed_assignments = self.fixed_assignments + [None] * (len(self.assignment_weights) - len(self.fixed_assignments))
 

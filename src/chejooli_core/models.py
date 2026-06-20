@@ -5,12 +5,11 @@ from .domain import CalendarDetails, Person, PersonCostDetails, Shift
 
 @dataclass
 class SchedulerConfig:
-    """Business policy for costs, hard constraints, and CLI output."""
+    """Business policy for costs and CLI output."""
 
     lambda_distribution: float = 50.0
     lambda_load: float = 20.0
     lambda_recency: float = 0.3
-    one_shift_per_person_per_calendar_day: bool = True
     output_dir: str = "./Output"
 
     def cost_params(self) -> dict[str, float]:

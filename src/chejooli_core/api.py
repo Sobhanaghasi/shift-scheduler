@@ -50,6 +50,13 @@ def validate_schedule_request(request: ScheduleRequest) -> list[ValidationIssue]
                 issues.append(ValidationIssue("unknown_unwanted_shift", f"Unknown shift ID {shift_id}.", f"people[{person_index}].unwanted_coeffs"))
 
     for shift_index, shift in enumerate(request.shifts):
+        if len(shift.conflicting_shifts) != len(set(shift.conflicting_shifts)):
+            issues.append(ValidationIssue("duplicate_conflicting_shift", "Conflicting shift IDs must be unique.", f"shifts[{shift_index}].conflicting_shifts"))
+        for conflicting_shift_id in shift.conflicting_shifts:
+            if conflicting_shift_id == shift.id:
+                issues.append(ValidationIssue("self_conflicting_shift", "A shift cannot conflict with itself.", f"shifts[{shift_index}].conflicting_shifts"))
+            elif conflicting_shift_id not in shift_id_set:
+                issues.append(ValidationIssue("unknown_conflicting_shift", f"Unknown shift ID {conflicting_shift_id}.", f"shifts[{shift_index}].conflicting_shifts"))
         fixed_people = [person_id for person_id in shift.fixed_assignments if person_id is not None]
         if len(fixed_people) != len(set(fixed_people)):
             issues.append(ValidationIssue("duplicate_fixed_assignee", "A person cannot be fixed twice on the same shift.", f"shifts[{shift_index}].fixed_assignments"))
@@ -110,7 +117,6 @@ def _run_simulation(run_id: int, request: ScheduleRequest):
         request.people,
         request.shifts,
         engine,
-        request.scheduler_config,
         request.algorithm_config,
     )
     return solver.solve(run_id)

@@ -58,8 +58,8 @@ The CLI reads four files from the input directory.
   "id": 10,
   "time_index": 10,
   "assignment_weights": [1.4, 0.6],
+  "conflicting_shifts": [9, 11],
   "fixed_assignments": [null, "Mostafa"],
-  "calendar_day": 6,
   "calendar_start_day": 6,
   "calendar_start_time": "20:00",
   "calendar_end_day": 7,
@@ -70,8 +70,8 @@ The CLI reads four files from the input directory.
 - `id`: unique shift ID.
 - `time_index`: chronological index used by spacing/distribution cost.
 - `assignment_weights`: one required person per item; order means primary, secondary, third, etc.
+- `conflicting_shifts`: hard constraints; a person assigned here cannot also be assigned to these shifts. Conflicts are treated as symmetric.
 - `fixed_assignments`: optional list aligned with `assignment_weights`; use `null` for scheduler-chosen roles.
-- `calendar_day`: logical day used by hard constraints.
 - `calendar_start_day` / `calendar_end_day`: event day numbers relative to `calendar.start_date`.
 - `calendar_start_time` / `calendar_end_time`: event times in `HH:MM`.
 
@@ -108,9 +108,6 @@ All shifts not listed in `impossible_shifts` are allowed.
     "lambda_distribution": 2400.0,
     "lambda_load": 360.0,
     "lambda_recency": 0.6
-  },
-  "hard_constraints": {
-    "one_shift_per_person_per_calendar_day": true
   }
 }
 ```
@@ -118,7 +115,6 @@ All shifts not listed in `impossible_shifts` are allowed.
 - `lambda_distribution`: importance of spreading workload over time.
 - `lambda_load`: importance of fair portion-based load.
 - `lambda_recency`: current schedule weight in load history; `0.6` means 60% current and 40% history.
-- `one_shift_per_person_per_calendar_day`: prevents assigning one person twice on the same logical day.
 
 ## Algorithm Environment
 

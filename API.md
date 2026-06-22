@@ -10,10 +10,15 @@ During backend development:
 pip install -e ../chejooli-core
 ```
 
-In production, depend on a pinned package version:
+Install from Hamravesh Artifactory with a pinned package version (matches the git release tag):
 
 ```toml
-chejooli-core==0.1.0
+chejooli-core==5.2
+```
+
+```bash
+pip install chejooli-core==5.2 \
+  --index-url https://repo.hsre.ir/artifactory/api/pypi/pypi/simple
 ```
 
 ## Main Interface

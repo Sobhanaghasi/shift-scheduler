@@ -1,7 +1,29 @@
+# Virtual environments
 venv/
+.venv/
+
+# Python bytecode and caches
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Local solver output
 Output/
 results/
 old results/
-*.egg-info/
+
+# Local algorithm tuning (see README for documented keys)
+.env

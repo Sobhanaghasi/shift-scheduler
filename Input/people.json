@@ -7,15 +7,13 @@
     "previous_schedule_final_shift_index": -2,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      1,
-      2,
-      4
+      6,
+      8
     ],
     "unwanted_coeffs": {
-      "6": 40,
-      "4": 40,
-      "10": 20,
-      "11": 20
+      "4": 20,
+      "2": 15,
+      "0": 30
     }
   },
   {
@@ -26,14 +24,13 @@
     "previous_schedule_final_shift_index": -5,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      0,
-      1
+      5,
+      11
     ],
     "unwanted_coeffs": {
-      "3": 30,
-      "7": 30,
-      "8": 20,
-      "9": 20
+      "7": 20,
+      "6": 30,
+      "2": 20
     }
   },
   {
@@ -44,13 +41,13 @@
     "previous_schedule_final_shift_index": -6,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      0,
-      1
+      1,
+      4
     ],
     "unwanted_coeffs": {
-      "4": 40,
-      "5": 20,
-      "6": 40
+      "6": 15,
+      "8": 15,
+      "7": 15
     }
   },
   {
@@ -61,14 +58,13 @@
     "previous_schedule_final_shift_index": -3,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      0,
       5,
-      6
+      9
     ],
     "unwanted_coeffs": {
-      "2": 30,
-      "3": 30,
-      "4": 40
+      "6": 15,
+      "1": 15,
+      "8": 15
     }
   },
   {
@@ -79,14 +75,13 @@
     "previous_schedule_final_shift_index": -3,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      0,
-      5,
-      6
+      1,
+      11
     ],
     "unwanted_coeffs": {
-      "2": 30,
-      "3": 30,
-      "4": 40
+      "4": 15,
+      "3": 15,
+      "6": 15
     }
   },
   {
@@ -97,13 +92,13 @@
     "previous_schedule_final_shift_index": -3,
     "previous_schedule_final_shift_weight": 1.0,
     "impossible_shifts": [
-      5,
-      6
+      4,
+      8
     ],
     "unwanted_coeffs": {
-      "2": 30,
-      "3": 30,
-      "4": 40
+      "0": 15,
+      "6": 30,
+      "10": 25
     }
   }
 ]

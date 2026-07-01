@@ -26,6 +26,7 @@ class CostEngine:
             weight = self.shifts[sid].slot_weight(slot_index)
             pref_cost += weight * coeff
         details.raw_preference_cost = pref_cost
+        details.weighted_preference_cost = self.params["lambda_preference"] * pref_cost
 
         repulsion_score = self._calculate_repulsion(person, assigned_roles)
         details.raw_distribution_score = repulsion_score
@@ -40,7 +41,9 @@ class CostEngine:
         details.load_ratio_deviation = load_details["load_ratio_deviation"]
         details.weighted_load_cost = self.params["lambda2_load"] * abs(details.load_ratio_deviation)
         details.portion = person.portion
-        details.total_cost = details.raw_preference_cost + details.weighted_dist_cost + details.weighted_load_cost
+        details.total_cost = (
+            details.weighted_preference_cost + details.weighted_dist_cost + details.weighted_load_cost
+        )
 
         return details
 

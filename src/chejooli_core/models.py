@@ -7,6 +7,7 @@ from .domain import CalendarDetails, Person, PersonCostDetails, Shift
 class SchedulerConfig:
     """Business policy for costs and CLI output."""
 
+    lambda_preference: float = 1.0
     lambda_distribution: float = 50.0
     lambda_load: float = 20.0
     lambda_recency: float = 0.3
@@ -15,6 +16,7 @@ class SchedulerConfig:
     def cost_params(self) -> dict[str, float]:
         """Return the cost-engine parameter names expected by the legacy engine."""
         return {
+            "lambda_preference": self.lambda_preference,
             "lambda1_distribution": self.lambda_distribution,
             "lambda2_load": self.lambda_load,
             "lambda3_recency": self.lambda_recency,

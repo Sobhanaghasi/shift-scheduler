@@ -62,6 +62,7 @@ class PersonCostDetails:
     historical_load_ratio: float = 1.0
     effective_load_ratio: float = 1.0
     load_ratio_deviation: float = 0.0
+    weighted_preference_cost: float = 0.0
     weighted_dist_cost: float = 0.0
     weighted_load_cost: float = 0.0
     portion: float = 1.0

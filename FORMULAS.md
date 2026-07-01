@@ -6,6 +6,8 @@ For person `p`, assigned roles are `R_p`. Each role `i` has weight `w_i` and tim
 
 `preference_p = sum(w_i * unwanted_coefficient_p,i)`
 
+`preference_cost_p = lambda_preference * preference_p`
+
 Penalizes unwanted assignments; an unspecified coefficient is zero.
 
 ## 2. Actual and Expected Load
@@ -48,7 +50,7 @@ Measures how concentrated the person's assigned load is.
 
 ## 7. Final Cost
 
-`person_cost_p = preference_p + distribution_cost_p + load_cost_p`
+`person_cost_p = preference_cost_p + distribution_cost_p + load_cost_p`
 
 `global_cost = sum(person_cost_p for all people)`
 

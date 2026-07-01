@@ -105,6 +105,7 @@ All shifts not listed in `impossible_shifts` are allowed.
 {
   "output_dir": "./Output",
   "cost_function": {
+    "lambda_preference": 1.0,
     "lambda_distribution": 2400.0,
     "lambda_load": 360.0,
     "lambda_recency": 0.6
@@ -112,6 +113,7 @@ All shifts not listed in `impossible_shifts` are allowed.
 }
 ```
 
+- `lambda_preference`: importance of unwanted-shift penalties.
 - `lambda_distribution`: importance of spreading workload over time.
 - `lambda_load`: importance of fair portion-based load.
 - `lambda_recency`: current schedule weight in load history; `0.6` means 60% current and 40% history.

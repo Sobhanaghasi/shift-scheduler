@@ -17,6 +17,7 @@ def load_request_from_directory(input_dir: str | os.PathLike[str] = "Input") -> 
 
     scheduler_config = SchedulerConfig(
         output_dir=config_data.get("output_dir", "./Output"),
+        lambda_preference=config_data.get("cost_function", {}).get("lambda_preference", 1.0),
         lambda_distribution=config_data.get("cost_function", {}).get("lambda_distribution", 50.0),
         lambda_load=config_data.get("cost_function", {}).get("lambda_load", 20.0),
         lambda_recency=config_data.get("cost_function", {}).get("lambda_recency", 0.3),

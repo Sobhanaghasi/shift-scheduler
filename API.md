@@ -13,11 +13,11 @@ pip install -e ../chejooli-core
 Install from Hamravesh Artifactory with a pinned package version (matches the git release tag):
 
 ```toml
-chejooli-core==5.2
+chejooli-core==5.3
 ```
 
 ```bash
-pip install chejooli-core==5.2 \
+pip install chejooli-core==5.3 \
   --index-url https://repo.hsre.ir/artifactory/api/pypi/pypi/simple
 ```
 
@@ -86,6 +86,27 @@ result.ranked_schedules[0].person_cost_breakdown
 ```
 
 Use `ranked_schedule.to_dict()` to serialize a schedule result.
+
+## JSON Export
+
+```python
+from chejooli_core import (
+    assignment_report_to_dict,
+    evaluate_assignments,
+    request_to_dict,
+    result_to_dict,
+    schedule_report_to_dict,
+)
+
+full_report = schedule_report_to_dict(request, result)
+assignment_report = assignment_report_to_dict(request, assignments)
+```
+
+- `request_to_dict(request)` — input in the same shape as the CLI `Input/` files.
+- `result_to_dict(result)` — ranked schedules with cost breakdowns.
+- `schedule_report_to_dict(request, result)` — full solve input and output.
+- `assignment_report_to_dict(request, assignments)` — input plus one concrete assignment map and its cost breakdown.
+- `evaluate_assignments(request, assignments)` — score one assignment map without re-solving.
 
 ## Errors
 

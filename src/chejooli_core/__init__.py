@@ -1,4 +1,4 @@
-from .api import solve_schedule, validate_schedule_request
+from .api import evaluate_assignments, solve_schedule, validate_schedule_request
 from .models import (
     AlgorithmConfig,
     ChejooliError,
@@ -11,6 +11,8 @@ from .models import (
     ValidationIssue,
 )
 from .domain import CalendarDetails, Person, PersonCostDetails, Shift
+
+from .schedule_json import assignment_report_to_dict, request_to_dict, result_to_dict, schedule_report_to_dict
 
 __all__ = [
     "AlgorithmConfig",
@@ -26,6 +28,11 @@ __all__ = [
     "ScheduleValidationError",
     "Shift",
     "ValidationIssue",
+    "assignment_report_to_dict",
+    "evaluate_assignments",
+    "request_to_dict",
+    "result_to_dict",
+    "schedule_report_to_dict",
     "solve_schedule",
     "validate_schedule_request",
 ]

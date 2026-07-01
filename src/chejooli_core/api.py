@@ -1,6 +1,7 @@
 from __future__ import annotations
 import concurrent.futures
 from .cost_engine import CostEngine
+from .domain import Schedule
 from .models import (
     RankedSchedule,
     ScheduleInfeasibleError,
@@ -107,6 +108,37 @@ def solve_schedule(request: ScheduleRequest) -> ScheduleResult:
             )
         )
     return ScheduleResult(ranked_schedules=ranked_schedules)
+
+
+def evaluate_assignments(
+    request: ScheduleRequest,
+    assignments: dict[int, list[str]],
+    *,
+    rank: int = 1,
+) -> RankedSchedule:
+    """Score one concrete assignment map and return its full cost breakdown."""
+    issues = validate_schedule_request(request)
+    if issues:
+        raise ScheduleValidationError(issues)
+
+    shift_map = {shift.id: shift for shift in request.shifts}
+    engine = CostEngine(shift_map, request.scheduler_config.cost_params())
+    schedule = Schedule(assignments=assignments)
+    total_portion = sum(person.portion for person in request.people)
+    details = {}
+    total_cost = 0.0
+    for person in request.people:
+        roles = schedule.get_person_roles(person.id)
+        person_details = engine.calculate_person_details(person, roles, total_portion)
+        details[person.id] = person_details
+        total_cost += person_details.total_cost
+
+    return RankedSchedule(
+        rank=rank,
+        global_energy_score=total_cost,
+        assignments=assignments,
+        person_cost_breakdown=details,
+    )
 
 
 def _run_simulation(run_id: int, request: ScheduleRequest):

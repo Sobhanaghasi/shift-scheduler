@@ -1,5 +1,4 @@
 # Build chejooli-core and publish it to Artifactory on every tag push.
-# Mirrors release.sh: `python -m build` (sdist + wheel) then `twine upload`.
 stages:
   - publish
 
